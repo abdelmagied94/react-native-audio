@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import Sound from 'react-native-sound';
-import {AudioRecorder, AudioUtils} from 'react-native-audio';
+import {AudioRecorder, AudioUtils} from 'react-native-audio-new-recorder';
 
 class AudioExample extends Component {
 

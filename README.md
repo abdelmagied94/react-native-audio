@@ -1,10 +1,6 @@
 
 Record audio in iOS or Android React Native apps.
 
-## MAINTENANCE STATUS
-
-This project is no longer actively maintained by me, the original author. I will not be answering issues or merging any more PRs. If someone is interested in taking over the library permanently, let me know!
-
 ## BREAKING CHANGES
 
 For React Native >= 0.47.2, use v3.4.0 and up.
@@ -21,8 +17,8 @@ from the network, please submit a PR to that project or try `react-native-video`
 Install the npm package and link it to your project:
 
 ```
-npm install react-native-audio --save
-react-native link react-native-audio
+npm install react-native-audio-new-recorder --save
+react-native link react-native-audio-new-recorder
 ```
 
 On *iOS* you need to add a usage description to `Info.plist`:
@@ -46,15 +42,15 @@ This is not necessary if you have used `react-native link`
 
 Edit `android/settings.gradle` to declare the project directory:
 ```
-include ':react-native-audio'
-project(':react-native-audio').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio/android')
+include ':react-native-audio-new-recorder'
+project(':react-native-audio-new-recorder').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-audio-new-recorder/android')
 ```
 
 Edit `android/app/build.gradle` to declare the project dependency:
 ```
 dependencies {
   ...
-  compile project(':react-native-audio')
+  compile project(':react-native-audio-new-recorder')
 }
 ```
 
@@ -78,7 +74,7 @@ public class MainApplication extends Application implements ReactApplication {
 
 #### iOS
 
-Drag `node_modules/react-native-audio/ios/RNAudio.xcoderproj` into your project's Libraries on Xcode.
+Drag `node_modules/react-native-audio-new-recorder/ios/RNAudio.xcoderproj` into your project's Libraries on Xcode.
 
 Add `libRNAudio.a` into Link Binary With Libraries from Xcode - Build Phases.
 
@@ -98,7 +94,7 @@ react-native run-android
 To record in AAC format, at 22050 KHz in low quality mono:
 
 ```
-import {AudioRecorder, AudioUtils} from 'react-native-audio';
+import {AudioRecorder, AudioUtils} from 'react-native-audio-new-recorder';
 let audioPath = AudioUtils.DocumentDirectoryPath + '/test.aac';
 
 AudioRecorder.prepareRecordingAtPath(audioPath, {
@@ -153,7 +149,7 @@ OutputFormat: string, `mpeg_4, aac_adts, amr_nb, amr_wb, three_gpp, webm`
 
 AudioSource: int (constants) (Possible values: AudioSource.DEFAULT, AudioSource.MIC, AudioSource.VOICE_UPLINK, AudioSource.VOICE_DOWNLINK, AudioSource.VOICE_CALL, AudioSource.CAMCORDER, AudioSource.VOICE_RECOGNITION, AudioSource.VOICE_COMMUNICATION, AudioSource.REMOTE_SUBMIX, AudioSource.UNPROCESSED)
 
-See [the example](https://github.com/jsierles/react-native-audio/blob/master/AudioExample/index.ios.js) for more details. For playing audio check out [React Native Sound](https://github.com/zmxv/react-native-sound)
+See [the example](https://github.com/abdelmagied94/react-native-audio-recorder/blob/master/AudioExample/index.ios.js) for more details. For playing audio check out [React Native Sound](https://github.com/zmxv/react-native-sound)
 
 MP3 recording is *not supported* since the underlying platforms do not support it.
 
