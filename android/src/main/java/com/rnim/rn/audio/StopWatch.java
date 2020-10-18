@@ -33,14 +33,13 @@ public class StopWatch {
     }
   
     public float getTimeSeconds() {
-      float seconds;
+      float seconds = elapsedTime;
       
-      if (paused) {
-        seconds = elapsedTime;
-      } else {
+      if (!paused) {
         long now = System.currentTimeMillis();
-        seconds = elapsedTime + (now - start) / 1000f;
+        seconds += (float)(now - start) / 1000f;
       }
-        return seconds;
+
+      return seconds;
     }
   }
