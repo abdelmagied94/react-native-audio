@@ -1,18 +1,16 @@
 {
   "name": "react-native-audio-new-recorder",
-  "version": "4.3.2",
+  "version": "4.3.3",
   "description": "React Native extension for recording audio",
   "main": "index.js",
   "author": "Joshua Sierles <joshua@diluvia.net> (https://github.com/jsierles)",
   "files": [
-    "ios/AudioRecorderManager.m",
-    "ios/AudioRecorderManager.h",
-    "ios/RNAudio.xcodeproj",
-    "README.md",
-    "LICENSE",
     "index.js",
     "android/*",
-    "RNAudio.podspec"
+    "ios/*",
+    "RNAudio.podspec",
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "react-native",
@@ -22,6 +20,15 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:abdelmagied94/react-native-audio-recorder.git"
+  },
+  "peerDependencies": {
+    "react": "^16.8.6",
+    "react-native": ">=0.60.0"
+  },
+  "devDependencies": {
+		"@react-native-community/eslint-config": "^1.1.0",
+		"eslint": "^6.6.0",
+		"eslint-plugin-import": "^2.20.2"
   },
   "nativePackage": true
 }

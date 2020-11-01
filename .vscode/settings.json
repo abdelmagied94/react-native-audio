@@ -1,0 +1,28 @@
+{
+	"search.useIgnoreFiles": false,
+	"search.exclude": {
+		"**/build": true,
+		"**/ios/Pods": true
+	},
+
+	"editor.tabSize": 2,
+	"eslint.alwaysShowStatus": true,
+	"eslint.lintTask.enable": true,
+	"eslint.packageManager": "yarn",
+	"eslint.validate": ["javascript", "javascriptreact"],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+}
