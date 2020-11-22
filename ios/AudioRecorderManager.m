@@ -107,8 +107,6 @@ RCT_EXPORT_MODULE();
     _progressUpdateTimer.paused = YES;
     [_progressUpdateTimer invalidate];
   }
-  
-  _currentTime = 0;
 }
 
 - (void)startProgressTimer {
@@ -225,8 +223,6 @@ RCT_REMAP_METHOD(prepareRecordingAtPath,
     return;
   }
 
-  NSNumber *sampleRate = [NSNumber numberWithLongLong:[[options objectForKey:@"SampleRate"] longLongValue]];
-  NSNumber *channels = [NSNumber numberWithLong:[[options objectForKey:@"Channels"] longValue]];
   NSString *quality = [options objectForKey:@"AudioQuality"];
   NSString *encoding = [options objectForKey:@"AudioEncoding"];
   NSTimeInterval maxDuration = [[options objectForKey:@"MaxDuration"] doubleValue];
@@ -249,8 +245,10 @@ RCT_REMAP_METHOD(prepareRecordingAtPath,
   NSURL *audioFileURL = [NSURL fileURLWithPath:path isDirectory:false];
   NSNumber *audioEncoding = [self getAudioEncoding:encoding];
   NSNumber *audioQuality = [self getAudioQuality:quality];
-  NSNumber *audioChannels = channels != nil ? channels : [NSNumber numberWithInt:2];
-  NSNumber *audioSampleRate = sampleRate != nil ? sampleRate : [NSNumber numberWithFloat:44100.0];
+  NSNumber *audioChannels = [NSNumber numberWithLong:[[options objectForKey:@"Channels"] longValue]];
+  NSNumber *audioSampleRate = [NSNumber numberWithLongLong:[[options objectForKey:@"SampleRate"] longLongValue]];
+  NSNumber *audioBitRate = [NSNumber numberWithLongLong:[[options objectForKey:@"AudioEncodingBitRate"] longLongValue]];
+  
   _progressUpdateInterval = progressUpdateInterval / 1000.0;
   _meteringEnabled = meteringEnabled;
   _includeBase64 = includeBase64;
@@ -261,6 +259,7 @@ RCT_REMAP_METHOD(prepareRecordingAtPath,
       audioEncoding, AVFormatIDKey,
       audioChannels, AVNumberOfChannelsKey,
       audioSampleRate, AVSampleRateKey,
+      audioBitRate, AVEncoderBitRateKey,
       nil];
   
   AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -285,14 +284,16 @@ RCT_REMAP_METHOD(prepareRecordingAtPath,
         settings:recordSettings
         error:&error];
 
+  if (error || !_audioRecorder) {
+    [self reset];
+    reject(FailedToConfigureRecorderError, [NSString stringWithFormat:@"Failed to initialize audio recorder with path %@. error: %@", path, error], nil);
+    return;
+  }
+    
   _audioRecorder.meteringEnabled = _meteringEnabled;
   _audioRecorder.delegate = self;
 
-  if (error) {
-    [self reset];
-    
-    reject(FailedToConfigureRecorderError, [NSString stringWithFormat:@"Failed to initialize audio recorder with path %@. error: %@", path, error], nil);
-  } else if ([_audioRecorder prepareToRecord] == NO) {
+  if ([_audioRecorder prepareToRecord] == NO) {
     [self reset];
     
     reject(FailedToPrepareRecorderError, [NSString stringWithFormat:@"Failed to prepare recorder with path %@. error: %@", path, error], nil);
@@ -419,6 +420,7 @@ RCT_EXPORT_METHOD(cleanPath:(NSString *)path
   _audioRecorder = nil;
   _progressUpdateTimer = nil;
   _maxRecordingDuration = 0;
+  _currentTime = 0;
 }
 
 - (void) stopAudioSession {

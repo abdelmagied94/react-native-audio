@@ -129,7 +129,7 @@ const AudioDefaultConfig = Object.freeze({
   Channels: 2,
   AudioQuality: AudioQualityIOS.HIGH ?? 'High',
   AudioEncoding: Platform.OS === 'ios' ? AudioEncodingIOS.AAC : AudioEncodingAndroid.AAC,
-  OutputFormat: AudioOuputFormatAndroid.AAC_ADTS ?? 'acc_adts',
+  OutputFormat: AudioOuputFormatAndroid.AAC_ADTS ?? 'aac_adts',
   MeteringEnabled: false,
   ProgressUpdateInterval: 1000,
   MeasurementMode: false,
