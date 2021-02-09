@@ -407,6 +407,7 @@ class AudioRecorder {
   _reset = () => {
     this._state = AudioState.Initial;
     this.lastPreparedPath = null;
+    this.lastPreparingPath = null;
   };
 
   _onError(error) {
