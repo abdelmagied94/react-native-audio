@@ -388,7 +388,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule implements MediaRe
       return;
     }
 
-    recordingDidFinished(currentMaxDuration);
+    recordingDidFinished(currentMaxDuration / 1000d);
   }
 
   private void recordingDidFinished(double duration) {
