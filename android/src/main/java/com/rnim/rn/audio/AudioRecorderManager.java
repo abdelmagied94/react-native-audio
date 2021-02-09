@@ -56,6 +56,7 @@ class AudioRecorderManager extends ReactContextBaseJavaModule implements MediaRe
   private static final String DownloadsDirectoryPath = "DownloadsDirectoryPath";
 
   private static final String InvalidStateError = "INVALID_STATE";
+  private static final String AlreadyRecordingError = "ALREADY_RECORDING_ERROR";
   private static final String FailedToConfigureRecorderError = "FAILED_TO_CONFIGURE_MEDIA_RECORDER";
   private static final String FailedToPrepareRecorderError = "FAILED_TO_PREPARE_RECORDER";
   private static final String RecorderNotPreparedError = "RECORDER_NOT_PREPARED";
@@ -123,7 +124,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule implements MediaRe
     constants.put("NoAccessToWriteToDirectory", NoAccessToWriteToDirectoryError);
     constants.put("RecorderServerDied", RecorderServerDiedError);
     constants.put("UnknownError", RecorderUnknownError);
-
+    constants.put("AlreadyRecording", AlreadyRecordingError);
+    
     constants.put("AacAudioEncoding", AacAudioEncoding);
     constants.put("AacEldAudioEncoding", AacEldAudioEncoding);
     constants.put("AmrNbAudioEncoding", AmrNbAudioEncoding);
@@ -192,6 +194,8 @@ class AudioRecorderManager extends ReactContextBaseJavaModule implements MediaRe
     }
 
     recorder = new MediaRecorder();
+    recorder.setOnErrorListener(this);
+    recorder.setOnInfoListener(this);
 
     try {
       recorder.setAudioSource(recordingSettings.getInt("AudioSource"));
@@ -242,9 +246,13 @@ class AudioRecorderManager extends ReactContextBaseJavaModule implements MediaRe
       logAndRejectPromise(promise, InvalidStateError, "Call stopRecording before starting new recording");
       return;
     }
-    recorder.setOnErrorListener(this);
-    recorder.setOnInfoListener(this);
-    recorder.start();
+    
+    try {
+      recorder.start();
+    } catch (IllegalStateException e) {
+      logAndRejectPromise(promise, AlreadyRecordingError, "Recorder is already running");
+      return;
+    }
 
     stopWatch.reset();
     stopWatch.start();

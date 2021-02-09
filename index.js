@@ -89,12 +89,15 @@ const AudioOuputFormatAndroid = Object.freeze(
 );
 
 const AudioError = Object.freeze({
+  RecorderIsPreparing: 'RECORDER_IS_PREPARING',
   InvalidState: AudioRecorderManager.InvalidState,
   FailedToConfigureRecorder: AudioRecorderManager.FailedToConfigureRecorder,
   FailedToPrepareRecorder: AudioRecorderManager.FailedToPrepareRecorder,
   RecorderNotPrepared: AudioRecorderManager.RecorderNotPrepared,
   NoRecordDataFound: AudioRecorderManager.NoRecordDataFound,
   NoAccessToWriteToDirectory: AudioRecorderManager.NoAccessToWriteToDirectory,
+  AlreadyRecording:
+    Platform.OS === 'android' ? AudioRecorderManager.AlreadyRecording : 'ALREADY_RECORDING_ERROR',
   MethodNotAvailable:
     Platform.OS === 'android'
       ? AudioRecorderManager.MethodNotAvailable
@@ -154,6 +157,7 @@ class AudioRecorder {
       AudioEvent.Finished,
       this._onFinished.bind(this)
     );
+    this.lastPreparingPath = null;
   }
 
   /** @param {Partial<typeof AudioDefaultConfig>?} config */
@@ -181,30 +185,40 @@ class AudioRecorder {
    * - FailedToPrepareRecorder
    */
   prepareAtPath = (path) => {
+    if (this.state === AudioState.Prepared && this.lastPreparedPath === path) {
+      return Promise.resolve(path);
+    }
+
+    if (this.state !== AudioState.Initial) {
+      return Promise.reject(
+        buildRejectError(
+          AudioError.InvalidState,
+          'Stop previous recording before starting preparing'
+        )
+      );
+    }
+
+    if (this.lastPreparingPath) {
+      return Promise.reject(
+        buildRejectError(
+          AudioError.RecorderIsPreparing,
+          `Recorder is already preparing with path ${this.lastPreparingPath}`
+        )
+      );
+    }
+
+    this.lastPreparingPath = path;
+
     return new Promise((resolve, reject) => {
-      if (this.state === AudioState.Prepared && this.lastPreparedPath === path) {
-        resolve(path);
-        return;
-      }
-
-      if (this.state !== AudioState.Initial) {
-        reject(
-          buildRejectError(
-            AudioError.InvalidState,
-            'Stop previous recording before starting preparing'
-          )
-        );
-
-        return;
-      }
-
       AudioRecorderManager.prepareRecordingAtPath(path, this.config)
         .then((outputPath) => {
           this._state = AudioState.Prepared;
           this.lastPreparedPath = outputPath;
+          this.lastPreparingPath = null;
           resolve(outputPath);
         })
         .catch((error) => {
+          this.lastPreparingPath = null;
           reject(error);
         });
     });
@@ -213,6 +227,7 @@ class AudioRecorder {
   /**
    * Errors:
    * - InvalidState
+   * - AlreadyRecording
    * - RecorderNotPreparedError
    */
   start = () => {
