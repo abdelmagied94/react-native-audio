@@ -174,7 +174,7 @@ class AudioRecorder {
   }
 
   static removeListener(subscription) {
-    AudioRecorderEventEmitter.removeSubscription(subscription);
+    subscription.remove();
   }
 
   /**
@@ -375,8 +375,8 @@ class AudioRecorder {
   };
 
   clean = () => {
-    AudioRecorderEventEmitter.removeSubscription(this.errorSubscription);
-    AudioRecorderEventEmitter.removeSubscription(this.finishSubscription);
+    this.errorSubscription.remove();
+    this.finishSubscription.remove();
     return this.destroy();
   };
 
